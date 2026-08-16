@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Write & Send — เครื่องมือวัดผลดิจิทัล Writing ม.3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#132A46;
+    --navy:#1B3A6B;
+    --navy-deep:#0E2140;
+    --amber:#1FA6B8;
+    --amber-soft:#E4F4F7;
+    --coral:#FF8A57;
+    --coral-soft:#FFEEE4;
+    --cream:#F6F5EF;
+    --paper:#FFFFFF;
+    --line:#DDE3EA;
+    --muted:#5B6B7D;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Sarabun',sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:'Space Mono',monospace;}
+
+  header{
+    background:linear-gradient(160deg,var(--navy-deep) 0%, var(--navy) 65%, #234a86 100%);
+    color:#fff;
+    padding:28px 6vw 34px;
+    position:relative;
+    overflow:hidden;
+  }
+  header::after{
+    content:"";
+    position:absolute; right:-60px; top:-60px;
+    width:260px; height:260px; border-radius:50%;
+    background:radial-gradient(circle, rgba(31,166,184,0.35), transparent 70%);
+  }
+  .eyebrow{
+    font-family:'Space Mono',monospace;
+    font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    color:#8FCBD8; margin:0 0 10px;
+  }
+  h1{font-size:clamp(22px,3.2vw,32px); margin:0 0 6px; font-weight:800; line-height:1.25;}
+  .sub{color:#C9D6E8; margin:0; font-size:15px; max-width:640px; line-height:1.6;}
+  .meta-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;}
+  .pill{
+    background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.22);
+    padding:6px 14px; border-radius:999px; font-size:13px; color:#fff;
+    display:flex; align-items:center; gap:6px;
+  }
+  .pill b{color:#8FCBD8;}
+
+  main{
+    max-width:1040px; margin:-18px auto 60px; padding:0 6vw;
+    display:grid; grid-template-columns:1.15fr .85fr; gap:22px;
+  }
+  @media (max-width:860px){ main{grid-template-columns:1fr;} }
+
+  .card{
+    background:var(--paper); border:1px solid var(--line);
+    border-radius:16px; padding:24px 26px; box-shadow:0 1px 2px rgba(19,42,70,0.04);
+  }
+  .card + .card{margin-top:20px;}
+  .card h2{font-size:16px; margin:0 0 4px; display:flex; align-items:center; gap:9px; color:var(--navy-deep);}
+  .step-no{
+    width:24px; height:24px; border-radius:7px; background:var(--amber-soft); color:var(--amber);
+    font-family:'Space Mono',monospace; font-weight:700; font-size:12px;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .card p.hint{color:var(--muted); font-size:13.5px; margin:2px 0 16px; line-height:1.55;}
+
+  .field-row{display:flex; gap:12px; flex-wrap:wrap;}
+  .field{flex:1; min-width:150px;}
+  .field label{font-size:12.5px; color:var(--muted); display:block; margin-bottom:5px;}
+  .field input, .field select{
+    width:100%; padding:9px 11px; border:1px solid var(--line); border-radius:9px;
+    font-family:'Sarabun',sans-serif; font-size:14px; background:#FCFCFA;
+  }
+
+  .task-box{
+    background:var(--amber-soft); border:1px dashed #9CCDD6; border-radius:12px;
+    padding:16px 18px; margin-top:14px;
+  }
+  .task-box .en{font-weight:700; color:var(--navy-deep); font-size:15px;}
+  .task-box .th{color:var(--ink); font-size:14px; margin-top:4px;}
+  .task-box .cando{margin-top:10px; font-size:12.5px; color:var(--amber); font-family:'Space Mono',monospace;}
+  select#topicSelect{margin-top:12px;}
+  .task-box .req{margin-top:10px; font-size:12.5px; color:var(--muted);}
+  .task-box .req b{color:var(--navy-deep);}
+
+  /* Writing area */
+  textarea#emailInput{
+    width:100%; min-height:210px; margin-top:14px; padding:16px 18px;
+    border:1px solid var(--line); border-radius:12px; font-family:'Sarabun',sans-serif;
+    font-size:14.5px; line-height:1.75; color:var(--ink); resize:vertical; background:#FCFCFA;
+  }
+  textarea#emailInput:focus{outline:none; border-color:var(--amber);}
+
+  .ai-tag{
+    display:inline-flex; align-items:center; gap:6px; background:var(--navy); color:#fff;
+    font-size:11px; padding:3px 10px; border-radius:999px; font-family:'Space Mono',monospace;
+    margin-top:14px;
+  }
+
+  .analysis-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px;}
+  .stat{background:var(--amber-soft); border-radius:10px; padding:12px; text-align:center;}
+  .stat b{display:block; font-family:'Space Mono',monospace; font-size:20px; color:var(--navy-deep);}
+  .stat span{font-size:11.5px; color:var(--muted);}
+
+  .struct-list{margin-top:14px; display:flex; gap:8px; flex-wrap:wrap;}
+  .struct-chip{
+    display:inline-flex; align-items:center; gap:6px; font-size:12.5px; padding:6px 12px;
+    border-radius:999px; border:1px solid var(--line); color:var(--muted);
+  }
+  .struct-chip.ok{background:var(--amber); color:#fff; border-color:var(--amber);}
+  .struct-chip .dot{width:7px; height:7px; border-radius:50%; background:var(--line);}
+  .struct-chip.ok .dot{background:#fff;}
+
+  .kw-list{margin-top:14px;}
+  .kw-list .label{font-size:12.5px; color:var(--muted); margin-bottom:8px;}
+  .kw{
+    display:inline-flex; align-items:center; gap:5px; font-size:12.5px; padding:5px 10px;
+    border-radius:999px; border:1px solid var(--line); margin:0 6px 6px 0; color:var(--muted);
+  }
+  .kw.hit{background:var(--amber); color:#fff; border-color:var(--amber);}
+
+  .dim{border-top:1px solid var(--line); padding-top:16px; margin-top:16px;}
+  .dim:first-of-type{border-top:none; margin-top:6px;}
+  .dim-head{display:flex; justify-content:space-between; align-items:baseline;}
+  .dim-head h3{margin:0; font-size:14.5px; color:var(--navy-deep);}
+  .dim-head .score-val{font-family:'Space Mono',monospace; color:var(--amber); font-weight:700;}
+  .dim-desc{font-size:12px; color:var(--muted); margin:4px 0 10px;}
+  .levels{display:grid; grid-template-columns:repeat(4,1fr); gap:6px;}
+  .lvl{
+    border:1px solid var(--line); border-radius:9px; padding:8px 6px; font-size:11.5px;
+    text-align:center; cursor:pointer; color:var(--muted); line-height:1.4;
+    transition:all .12s ease;
+  }
+  .lvl b{display:block; font-family:'Space Mono',monospace; font-size:14px; color:var(--ink);}
+  .lvl.sel{background:var(--navy); border-color:var(--navy); color:#fff;}
+  .lvl.sel b{color:#fff;}
+
+  .total-row{
+    margin-top:20px; padding-top:16px; border-top:2px solid var(--navy-deep);
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .total-row .lbl{font-size:14px; color:var(--muted);}
+  .total-row .val{font-family:'Space Mono',monospace; font-size:30px; color:var(--navy-deep); font-weight:700;}
+  .cefr-badge{
+    background:var(--coral-soft); color:var(--coral); font-family:'Space Mono',monospace;
+    font-size:12px; padding:4px 10px; border-radius:7px; margin-left:8px;
+  }
+
+  .btn-row{display:flex; gap:10px; margin-top:18px;}
+  .btn{
+    flex:1; border:none; border-radius:10px; padding:12px 14px; font-size:14px; cursor:pointer;
+    font-family:'Sarabun',sans-serif; font-weight:600; transition:opacity .15s ease;
+  }
+  .btn:hover{opacity:.9;}
+  .btn.primary{background:var(--navy-deep); color:#fff;}
+  .btn.ghost{background:#fff; border:1px solid var(--line); color:var(--navy-deep);}
+
+  .side-note{
+    background:var(--navy-deep); color:#DCE6F2; border-radius:16px; padding:20px 22px;
+    font-size:13px; line-height:1.7;
+  }
+  .side-note h4{color:#8FCBD8; margin:0 0 8px; font-size:13px; font-family:'Space Mono',monospace; letter-spacing:.04em;}
+  .side-note ul{margin:0; padding-left:18px;}
+  .side-note li{margin-bottom:6px;}
+
+  footer{text-align:center; color:var(--muted); font-size:12px; padding:26px 6vw 40px;}
+
+  @media print{
+    header, .btn-row, .side-note, #resetBtn{display:none !important;}
+    body{background:#fff;}
+    main{margin-top:10px;}
+    textarea#emailInput{border:1px solid #ccc;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Digital Assessment for CEFR Challenge · กิจกรรมที่ 2</div>
+  <h1>Write &amp; Send — เครื่องมือวัดผลดิจิทัลทักษะ Writing ระดับชั้น ม.3</h1>
+  <p class="sub">ให้นักเรียนเขียนอีเมลสั้นตามสถานการณ์ที่กำหนด ระบบ AI จะวิเคราะห์โครงสร้างอีเมลและคำศัพท์เป้าหมายให้อัตโนมัติ จากนั้นครูให้คะแนนด้วย 3D Rubric ในหน้าเดียวกัน</p>
+  <div class="meta-row">
+    <div class="pill">CEFR <b>A2–B1</b></div>
+    <div class="pill">AI <b>Structure &amp; Keyword Analysis</b></div>
+    <div class="pill">Rubric <b>3 มิติ / 4 ระดับ</b></div>
+    <div class="pill">ระดับชั้น <b>ม.3</b></div>
+  </div>
+</header>
+
+<main>
+  <div>
+    <!-- STEP 1 -->
+    <div class="card">
+      <h2><span class="step-no">1</span> ข้อมูลผู้เขียน และสถานการณ์การเขียนอีเมล</h2>
+      <p class="hint">กรอกข้อมูลนักเรียน แล้วเลือกสถานการณ์การเขียนอีเมล (Writing Task) ตาม Can-Do Statement ของ ม.3</p>
+      <div class="field-row">
+        <div class="field"><label>ชื่อ-สกุลนักเรียน</label><input id="stuName" placeholder="เช่น เด็กชายขยัน ตั้งใจดี"></div>
+        <div class="field"><label>ชั้น/ห้อง</label><input id="stuClass" placeholder="เช่น ม.3/1"></div>
+        <div class="field"><label>วันที่สอบ</label><input id="stuDate" type="date"></div>
+      </div>
+      <select id="topicSelect">
+        <option value="0">1) Inviting a Friend — เขียนอีเมลชวนเพื่อนไปงาน/กิจกรรม</option>
+        <option value="1">2) Asking for Sick Leave — เขียนอีเมลขอลาป่วยถึงครู</option>
+        <option value="2">3) Thank-you Email — เขียนอีเมลขอบคุณหลังได้รับความช่วยเหลือ</option>
+      </select>
+      <div class="task-box" id="taskBox"></div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="card">
+      <h2><span class="step-no">2</span> เขียนอีเมล (AI วิเคราะห์โครงสร้างอัตโนมัติ)</h2>
+      <p class="hint">ให้นักเรียนพิมพ์อีเมลตามสถานการณ์ด้านบนในกล่องข้อความ ระบบจะตรวจโครงสร้างอีเมลและคำศัพท์เป้าหมายให้แบบเรียลไทม์ขณะพิมพ์</p>
+
+      <textarea id="emailInput" placeholder="Dear ...,&#10;&#10;I am writing to ...&#10;&#10;Best wishes,&#10;..."></textarea>
+      <span class="ai-tag">🤖 AI Writing Analysis</span>
+
+      <div class="analysis-grid">
+        <div class="stat"><b id="statWords">0</b><span>คำที่เขียน (words)</span></div>
+        <div class="stat"><b id="statSentences">0</b><span>ประโยค (sentences)</span></div>
+        <div class="stat"><b id="statChars">0</b><span>ตัวอักษร (characters)</span></div>
+      </div>
+
+      <div class="struct-list" id="structWrap">
+        <div class="struct-chip" data-part="greeting"><span class="dot"></span>Greeting</div>
+        <div class="struct-chip" data-part="opening"><span class="dot"></span>Opening line</div>
+        <div class="struct-chip" data-part="body"><span class="dot"></span>Body (≥2 sentences)</div>
+        <div class="struct-chip" data-part="closing"><span class="dot"></span>Closing phrase</div>
+        <div class="struct-chip" data-part="signoff"><span class="dot"></span>Sign-off + Name</div>
+      </div>
+
+      <div class="kw-list">
+        <div class="label">คำศัพท์/โครงสร้างเป้าหมายที่ตรวจพบอัตโนมัติ (Keyword Coverage) — AI ช่วยตรวจสอบ</div>
+        <div id="kwWrap"></div>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="card">
+      <h2><span class="step-no">3</span> 3D Rubric — ให้คะแนนโดยครูผู้สอน</h2>
+      <p class="hint">เลือกระดับคะแนนแต่ละมิติ (1–4) ระบบจะรวมคะแนนและประเมินระดับ CEFR ให้อัตโนมัติ</p>
+
+      <div class="dim" data-dim="content">
+        <div class="dim-head"><h3>มิติที่ 1 · Content &amp; Task Fulfillment</h3><span class="score-val">—/4</span></div>
+        <div class="dim-desc">เนื้อหาตรงประเด็น ครบตามสถานการณ์ที่กำหนด</div>
+        <div class="levels">
+          <div class="lvl" data-v="1"><b>1</b>ไม่ตรงประเด็น</div>
+          <div class="lvl" data-v="2"><b>2</b>ตรงบางส่วน</div>
+          <div class="lvl" data-v="3"><b>3</b>ตรงประเด็น ครบถ้วนพอควร</div>
+          <div class="lvl" data-v="4"><b>4</b>ครบถ้วน มีรายละเอียดดี</div>
+        </div>
+      </div>
+
+      <div class="dim" data-dim="language">
+        <div class="dim-head"><h3>มิติที่ 2 · Language Use (Vocabulary &amp; Grammar)</h3><span class="score-val">—/4</span></div>
+        <div class="dim-desc">ความถูกต้องและความหลากหลายของคำศัพท์/โครงสร้างประโยค</div>
+        <div class="levels">
+          <div class="lvl" data-v="1"><b>1</b>คำศัพท์จำกัดมาก</div>
+          <div class="lvl" data-v="2"><b>2</b>ใช้คำศัพท์พื้นฐาน มีข้อผิดพลาดบ่อย</div>
+          <div class="lvl" data-v="3"><b>3</b>ใช้โครงสร้างง่ายได้ถูกต้องพอควร</div>
+          <div class="lvl" data-v="4"><b>4</b>หลากหลาย ถูกต้อง สื่อสารชัดเจน</div>
+        </div>
+      </div>
+
+      <div class="dim" data-dim="format">
+        <div class="dim-head"><h3>มิติที่ 3 · Email Format &amp; Organization</h3><span class="score-val">—/4</span></div>
+        <div class="dim-desc">โครงสร้างอีเมล (คำทักทาย/เนื้อหา/คำลงท้าย) และการจัดย่อหน้า</div>
+        <div class="levels">
+          <div class="lvl" data-v="1"><b>1</b>ไม่มีโครงสร้างอีเมล</div>
+          <div class="lvl" data-v="2"><b>2</b>มีบางส่วน ไม่ครบ</div>
+          <div class="lvl" data-v="3"><b>3</b>ครบโครงสร้างหลัก จัดวางพอควร</div>
+          <div class="lvl" data-v="4"><b>4</b>ครบถ้วน เป็นระเบียบ ชัดเจน</div>
+        </div>
+      </div>
+
+      <div class="total-row">
+        <div class="lbl">คะแนนรวม (จาก 12)</div>
+        <div><span class="val" id="totalScore">0</span><span class="cefr-badge" id="cefrResult">รอให้คะแนน</span></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn primary" onclick="window.print()">🖨️ พิมพ์ผลการประเมิน</button>
+        <button class="btn ghost" id="resetBtn">↺ เริ่มนักเรียนคนใหม่</button>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="side-note">
+      <h4>วิธีใช้ / HOW TO USE</h4>
+      <ul>
+        <li><b>ครู:</b> เปิดลิงก์นี้บนคอมพิวเตอร์หรือแท็บเล็ต 1 เครื่อง/นักเรียน 1 คน</li>
+        <li>กรอกชื่อ–ห้อง เลือกสถานการณ์การเขียนอีเมลที่ต้องการทดสอบ</li>
+        <li>ให้นักเรียนพิมพ์อีเมลลงในกล่องข้อความ (แนะนำ 10–15 นาที)</li>
+        <li>AI จะตรวจโครงสร้างอีเมลและคำศัพท์เป้าหมายให้อัตโนมัติระหว่างพิมพ์</li>
+        <li>ครูให้คะแนน 3D Rubric ทีละมิติ ระบบสรุประดับ CEFR ให้ทันที</li>
+        <li>กด "พิมพ์ผลการประเมิน" เพื่อบันทึกเป็น PDF ต่อนักเรียน 1 คน</li>
+      </ul>
+      <h4 style="margin-top:16px;">หมายเหตุ AI</h4>
+      <ul>
+        <li>ใช้ JavaScript วิเคราะห์ข้อความแบบ real-time ในเบราว์เซอร์ ไม่ส่งข้อมูลออกนอกเครื่อง</li>
+        <li>ตรวจจับองค์ประกอบอีเมล (คำทักทาย/เนื้อหา/คำลงท้าย) และคำศัพท์เป้าหมายจากรูปแบบประโยคภาษาอังกฤษทั่วไป</li>
+      </ul>
+    </div>
+  </div>
+</main>
+
+<footer>ออกแบบสำหรับ SPM Korat Smart Master English Teacher Award 2026 — กิจกรรมที่ 2 · Digital Assessment for CEFR Challenge (Writing · ม.3)</footer>
+
+<script>
+const topics = [
+  {
+    en:"Write a short email to your friend inviting them to your birthday party this weekend.",
+    th:"เขียนอีเมลสั้นถึงเพื่อน ชวนไปงานวันเกิดของนักเรียนในสุดสัปดาห์นี้",
+    cando:"Can-Do (A2–B1): I can write a short, simple email inviting a friend to an event, giving basic details (when/where).",
+    keywords:["dear","invite","party","would you like","this weekend","best wishes"]
+  },
+  {
+    en:"Write a short email to your teacher explaining that you are sick and cannot come to school today.",
+    th:"เขียนอีเมลสั้นถึงครู แจ้งว่าป่วยและไม่สามารถมาโรงเรียนได้ในวันนี้",
+    cando:"Can-Do (A2–B1): I can write a short email explaining a simple personal situation and giving a polite reason.",
+    keywords:["dear","i am writing to","because","sick","sorry","sincerely"]
+  },
+  {
+    en:"Write a short email to thank someone who helped you with your homework last week.",
+    th:"เขียนอีเมลสั้นขอบคุณคนที่ช่วยนักเรียนทำการบ้านเมื่อสัปดาห์ที่แล้ว",
+    cando:"Can-Do (A2–B1): I can write a short email to thank someone and explain why I am grateful using simple past tense.",
+    keywords:["dear","thank you","because","helped me","really appreciate","best regards"]
+  }
+];
+
+function renderTask(i){
+  const t = topics[i];
+  document.getElementById('taskBox').innerHTML =
+    `<div class="en">"${t.en}"</div><div class="th">${t.th}</div><div class="cando">${t.cando}</div><div class="req">เขียนอย่างน้อย <b>40 คำ</b> และมีโครงสร้างอีเมลครบ (คำทักทาย → เนื้อหา → คำลงท้าย)</div>`;
+  renderKeywords(t.keywords);
+}
+document.getElementById('topicSelect').addEventListener('change', e=>renderTask(e.target.value));
+renderTask(0);
+
+function renderKeywords(list){
+  const wrap = document.getElementById('kwWrap');
+  wrap.innerHTML = list.map(k=>`<span class="kw" data-k="${k.toLowerCase()}">${k}</span>`).join('');
+}
+
+/* ---------- AI-style writing analysis ---------- */
+const emailInput = document.getElementById('emailInput');
+const greetings = ["dear","hi ","hello","hey "];
+const openings = ["i am writing","i'm writing","how are you","i hope","just wanted"];
+const closings = ["best wishes","best regards","sincerely","see you","talk soon","take care","looking forward"];
+const signoffPattern = /(best wishes|best regards|sincerely|regards|love|see you)[,!.]?\s*\n?\s*[a-zA-Z]{2,}/i;
+
+emailInput.addEventListener('input', analyze);
+
+function analyze(){
+  const text = emailInput.value;
+  const lower = text.toLowerCase();
+  const words = text.trim().split(/\s+/).filter(Boolean);
+  const sentences = text.split(/[.!?]+/).filter(s=>s.trim().length>1);
+
+  document.getElementById('statWords').textContent = text.trim() ? words.length : 0;
+  document.getElementById('statSentences').textContent = text.trim() ? sentences.length : 0;
+  document.getElementById('statChars').textContent = text.length;
+
+  setChip('greeting', greetings.some(g=>lower.includes(g)));
+  setChip('opening', openings.some(o=>lower.includes(o)));
+  setChip('body', sentences.length>=2);
+  setChip('closing', closings.some(c=>lower.includes(c)));
+  setChip('signoff', signoffPattern.test(text));
+
+  document.querySelectorAll('.kw').forEach(el=>{
+    el.classList.toggle('hit', lower.includes(el.dataset.k));
+  });
+}
+
+function setChip(part, isOk){
+  const chip = document.querySelector(`.struct-chip[data-part="${part}"]`);
+  chip.classList.toggle('ok', isOk);
+}
+
+/* ---------- Rubric scoring ---------- */
+const scores = {content:0, language:0, format:0};
+document.querySelectorAll('.dim').forEach(dim=>{
+  const key = dim.dataset.dim;
+  dim.querySelectorAll('.lvl').forEach(lvl=>{
+    lvl.addEventListener('click', ()=>{
+      dim.querySelectorAll('.lvl').forEach(l=>l.classList.remove('sel'));
+      lvl.classList.add('sel');
+      scores[key] = parseInt(lvl.dataset.v);
+      dim.querySelector('.score-val').textContent = `${lvl.dataset.v}/4`;
+      updateTotal();
+    });
+  });
+});
+
+function updateTotal(){
+  const total = scores.content + scores.language + scores.format;
+  document.getElementById('totalScore').textContent = total;
+  const badge = document.getElementById('cefrResult');
+  if(total===0){ badge.textContent='รอให้คะแนน'; return; }
+  if(total<=5){ badge.textContent='ต่ำกว่า A2 — ควรฝึกเพิ่มเติม'; }
+  else if(total<=8){ badge.textContent='ระดับ A2 (Can-Do พื้นฐาน)'; }
+  else if(total<=10){ badge.textContent='ระดับ A2+/B1 (Can-Do ผ่านเกณฑ์)'; }
+  else{ badge.textContent='ระดับ B1 (Can-Do ดีเยี่ยม)'; }
+}
+
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  document.getElementById('stuName').value='';
+  document.getElementById('stuClass').value='';
+  document.getElementById('stuDate').value='';
+  emailInput.value='';
+  analyze();
+  document.querySelectorAll('.lvl').forEach(l=>l.classList.remove('sel'));
+  document.querySelectorAll('.score-val').forEach(s=>s.textContent='—/4');
+  scores.content=0; scores.language=0; scores.format=0;
+  updateTotal();
+});
+</script>
+</body>
+</html>
